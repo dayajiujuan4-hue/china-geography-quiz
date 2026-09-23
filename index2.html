@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>中国地理クイズ</title>
+
+<style>
+
+/* =========================================
+   全体
+========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    font-family:
+        "Noto Serif JP",
+        "Yu Mincho",
+        "Hiragino Mincho ProN",
+        serif;
+
+    color: #3c3028;
+
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(180, 130, 70, 0.08),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 80% 70%,
+            rgba(160, 40, 40, 0.06),
+            transparent 25%
+        ),
+        #f5efe2;
+}
+
+
+/* =========================================
+   ページ
+========================================= */
+
+.page {
+    width: 100%;
+    max-width: 1150px;
+
+    margin: 0 auto;
+
+    padding: 30px 20px 50px;
+}
+
+
+/* =========================================
+   ヘッダー
+========================================= */
+
+.header {
+    text-align: center;
+
+    margin-bottom: 25px;
+}
+
+.seal {
+    display: inline-flex;
+
+    width: 58px;
+    height: 58px;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #a52d2d;
+
+    color: #f9e8c7;
+
+    border: 3px solid #8e2424;
+
+    font-size: 24px;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 3px 8px rgba(80, 30, 20, 0.2);
+
+    transform: rotate(-3deg);
+}
+
+h1 {
+    margin: 8px 0 5px;
+
+    font-size: 36px;
+
+    letter-spacing: 0.15em;
+
+    color: #8f2929;
+}
+
+.subtitle {
+    color: #8b7564;
+
+    font-size: 14px;
+
+    letter-spacing: 0.2em;
+}
+
+
+/* =========================================
+   メインカード
+========================================= */
+
+.card {
+    position: relative;
+
+    background:
+        rgba(255, 252, 244, 0.96);
+
+    border: 1px solid #d8c4a4;
+
+    box-shadow:
+        0 10px 30px rgba(70, 40, 20, 0.12);
+
+    padding: 25px;
+
+    overflow: hidden;
+}
+
+.card::before,
+.card::after {
+    content: "";
+
+    position: absolute;
+
+    left: 25px;
+    right: 25px;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            to right,
+            transparent,
+            #b48a4b 15%,
+            #b48a4b 85%,
+            transparent
+        );
+}
+
+.card::before {
+    top: 12px;
+}
+
+.card::after {
+    bottom: 12px;
+}
+
+
+/* =========================================
+   説明
+========================================= */
+
+.description {
+    text-align: center;
+
+    margin: 5px 0 15px;
+
+    color: #68594e;
+
+    font-size: 16px;
+
+    line-height: 1.8;
+}
+
+
+/* =========================================
+   地図
+========================================= */
+
+.map-wrapper {
+    position: relative;
+
+    width: 100%;
+
+    max-width: 1000px;
+
+    margin: 0 auto 15px;
+
+    background: #f8f3e8;
+
+    border: 1px solid #d5c09b;
+
+    overflow: hidden;
+}
+
+#map {
+    width: 100%;
+
+    height: 620px;
+}
+
+
+/* 地図上の省 */
+
+.province {
+    fill: #fffdf7;
+
+    stroke: #9e8971;
+
+    stroke-width: 0.8;
+
+    transition:
+        fill 0.3s,
+        stroke 0.3s;
+}
+
+
+/* 正解した省 */
+
+.province.correct {
+    fill: #eadfca;
+
+    stroke: #a97832;
+
+    stroke-width: 1.5;
+}
+
+
+/* 現在の問題 */
+
+.province.current {
+    fill: #fff3dc;
+
+    stroke: #a52d2d;
+
+    stroke-width: 2.5;
+}
+
+
+/* =========================================
+   問題
+========================================= */
+
+.question-box {
+    text-align: center;
+
+    margin: 10px 0 15px;
+}
+
+.question-label {
+    font-size: 13px;
+
+    color: #a68a67;
+
+    letter-spacing: 0.2em;
+
+    margin-bottom: 5px;
+}
+
+.question {
+    font-size: 25px;
+
+    font-weight: bold;
+
+    color: #4a3329;
+}
+
+
+/* =========================================
+   入力
+========================================= */
+
+.answer-area {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 8px;
+}
+
+input {
+    width: 270px;
+
+    padding: 12px 15px;
+
+    font-family:
+        "Noto Serif JP",
+        "Yu Mincho",
+        serif;
+
+    font-size: 18px;
+
+    color: #40352f;
+
+    background: #fffdf8;
+
+    border:
+        1px solid #b9a487;
+
+    border-radius: 3px;
+
+    outline: none;
+}
+
+input:focus {
+    border-color: #a52d2d;
+
+    box-shadow:
+        0 0 0 3px rgba(165, 45, 45, 0.1);
+}
+
+
+/* =========================================
+   ボタン
+========================================= */
+
+button {
+    padding: 12px 25px;
+
+    font-family:
+        "Noto Serif JP",
+        "Yu Mincho",
+        serif;
+
+    font-size: 17px;
+
+    border: none;
+
+    border-radius: 3px;
+
+    background: #a52d2d;
+
+    color: #fff6e4;
+
+    cursor: pointer;
+
+    letter-spacing: 0.1em;
+
+    box-shadow:
+        0 3px 7px rgba(90, 30, 20, 0.2);
+
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #8d2323;
+
+    transform: translateY(-1px);
+}
+
+.restart-button {
+    background: #b48a4b;
+}
+
+.restart-button:hover {
+    background: #967038;
+}
+
+
+/* =========================================
+   結果
+========================================= */
+
+.result {
+    height: 32px;
+
+    margin-top: 5px;
+
+    text-align: center;
+
+    font-size: 20px;
+
+    font-weight: bold;
+}
+
+.correct-text {
+    color: #9a6b25;
+}
+
+.wrong-text {
+    color: #a52d2d;
+}
+
+
+/* =========================================
+   進捗
+========================================= */
+
+.progress {
+    text-align: center;
+
+    margin-top: 5px;
+
+    color: #8a7765;
+
+    font-size: 14px;
+
+    letter-spacing: 0.1em;
+}
+
+
+/* =========================================
+   完成画面
+========================================= */
+
+.complete {
+    text-align: center;
+
+    margin: 10px 0;
+
+    color: #8f2929;
+
+    font-size: 28px;
+
+    font-weight: bold;
+}
+
+.complete-sub {
+    text-align: center;
+
+    color: #806c5c;
+
+    margin-bottom: 15px;
+}
+
+
+/* =========================================
+   スマホ
+========================================= */
+
+@media (max-width: 700px) {
+
+    .page {
+        padding: 20px 10px 40px;
+    }
+
+    h1 {
+        font-size: 27px;
+    }
+
+    .card {
+        padding: 15px 8px;
+    }
+
+    #map {
+        height: 500px;
+    }
+
+    .answer-area {
+        flex-direction: column;
+    }
+
+    input {
+        width: 90%;
+    }
+
+    button {
+        width: 170px;
+    }
+
+    .question {
+        font-size: 22px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- =================================
+         ヘッダー
+    ================================== -->
+
+    <div class="header">
+
+        <div class="seal">
+            中
+        </div>
+
+        <h1>
+            中国地理クイズ
+        </h1>
+
+        <div class="subtitle">
+            CHINA GEOGRAPHY QUIZ
+        </div>
+
+    </div>
+
+
+    <!-- =================================
+         メイン
+    ================================== -->
+
+    <div class="card">
+
+
+        <div class="description">
+
+            中国の地図を見ながら、
+            <br>
+            空欄の省級行政区を中国語で答えてください。
+
+        </div>
+
+
+        <!-- 地図 -->
+
+        <div class="map-wrapper">
+
+            <svg
+                id="map"
+                viewBox="0 0 1000 620"
+                preserveAspectRatio="xMidYMid meet">
+            </svg>
+
+        </div>
+
+
+        <!-- 問題 -->
+
+        <div class="question-box">
+
+            <div class="question-label">
+                QUESTION
+            </div>
+
+            <div
+                id="question"
+                class="question">
+                読み込み中……
+            </div>
+
+        </div>
+
+
+        <!-- 回答 -->
+
+        <div class="answer-area">
+
+            <input
+                id="answer"
+                type="text"
+                placeholder="中国語で入力"
+                autocomplete="off"
+            >
+
+            <button
+                id="answerButton"
+                onclick="checkAnswer()">
+                回答
+            </button>
+
+        </div>
+
+
+        <!-- 結果 -->
+
+        <div
+            id="result"
+            class="result">
+        </div>
+
+
+        <!-- 進捗 -->
+
+        <div
+            id="progress"
+            class="progress">
+            地図を読み込んでいます……
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+/* =========================================
+   データ
+========================================= */
+
+
+/*
+    中国の省級行政区
+
+    今回は34区分。
+
+    直轄市
+    北京市
+    天津市
+    上海市
+    重庆市
+
+    省
+    河北省
+    山西省
+    辽宁省
+    吉林省
+    黑龙江省
+    江苏省
+    浙江省
+    安徽省
+    福建省
+    江西省
+    山东省
+    河南省
+    湖北省
+    湖南省
+    广东省
+    海南省
+    四川省
+    贵州省
+    云南省
+    陕西省
+    甘肃省
+    青海省
+    台湾省
+
+    自治区
+    内蒙古自治区
+    广西壮族自治区
+    西藏自治区
+    宁夏回族自治区
+    新疆维吾尔自治区
+
+    特別行政区
+    香港特别行政区
+    澳门特别行政区
+*/
+
+
+const provinceNames = [
+
+    "北京市",
+    "天津市",
+    "河北省",
+    "山西省",
+    "内蒙古自治区",
+    "辽宁省",
+    "吉林省",
+    "黑龙江省",
+
+    "上海市",
+    "江苏省",
+    "浙江省",
+    "安徽省",
+    "福建省",
+    "江西省",
+    "山东省",
+
+    "河南省",
+    "湖北省",
+    "湖南省",
+    "广东省",
+    "广西壮族自治区",
+    "海南省",
+
+    "重庆市",
+    "四川省",
+    "贵州省",
+    "云南省",
+    "西藏自治区",
+
+    "陕西省",
+    "甘肃省",
+    "青海省",
+    "宁夏回族自治区",
+    "新疆维吾尔自治区",
+
+    "香港特别行政区",
+    "澳门特别行政区",
+    "台湾省"
+
+];
+
+
+/* =========================================
+   ゲーム状態
+========================================= */
+
+let provinces = [];
+
+let currentQuestion = 0;
+
+let score = 0;
+
+
+/* =========================================
+   中国地図データ
+========================================= */
+
+
+/*
+    cn-atlas の省級GeoJSONを読み込みます。
+*/
+
+const GEOJSON_URL =
+    "https://unpkg.com/cn-atlas@latest/provinces.json";
+
+
+/* =========================================
+   GeoJSON読み込み
+========================================= */
+
+async function loadMap() {
+
+    try {
+
+        const response =
+            await fetch(GEOJSON_URL);
+
+        if (!response.ok) {
+
+            throw new Error(
+                "地図データを読み込めませんでした"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        provinces =
+            data.features;
+
+
+        drawMap();
+
+
+        startQuiz();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        document.getElementById(
+            "question"
+        ).textContent =
+            "地図の読み込みに失敗しました";
+
+
+        document.getElementById(
+            "progress"
+        ).textContent =
+            "インターネット接続を確認してください。";
+
+    }
+
+}
+
+
+/* =========================================
+   GeoJSON → SVG
+========================================= */
+
+
+/*
+    緯度経度をSVG座標へ変換します。
+*/
+
+function project(coordinate) {
+
+    const lon = coordinate[0];
+
+    const lat = coordinate[1];
+
+
+    /*
+        中国全土が見えるように設定
+    */
+
+    const minLon = 73;
+
+    const maxLon = 135;
+
+    const minLat = 18;
+
+    const maxLat = 54;
+
+
+    const x =
+        (lon - minLon)
+        /
+        (maxLon - minLon)
+        *
+        1000;
+
+
+    const y =
+        (maxLat - lat)
+        /
+        (maxLat - minLat)
+        *
+        620;
+
+
+    return [x, y];
+
+}
+
+
+/* =========================================
+   Polygon → SVG path
+========================================= */
+
+function polygonToPath(coordinates) {
+
+    let path = "";
+
+
+    coordinates.forEach(
+        ring => {
+
+            ring.forEach(
+                (coordinate, index) => {
+
+                    const point =
+                        project(coordinate);
+
+
+                    if (index === 0) {
+
+                        path +=
+                            `M ${point[0]} ${point[1]} `;
+
+                    } else {
+
+                        path +=
+                            `L ${point[0]} ${point[1]} `;
+
+                    }
+
+                }
+            );
+
+
+            path += "Z ";
+
+        }
+    );
+
+
+    return path;
+
+}
+
+
+/* =========================================
+   MultiPolygon → SVG path
+========================================= */
+
+function geometryToPath(geometry) {
+
+    if (
+        geometry.type ===
+        "Polygon"
+    ) {
+
+        return polygonToPath(
+            geometry.coordinates
+        );
+
+    }
+
+
+    if (
+        geometry.type ===
+        "MultiPolygon"
+    ) {
+
+        let path = "";
+
+
+        geometry.coordinates.forEach(
+            polygon => {
+
+                path +=
+                    polygonToPath(
+                        polygon
+                    );
+
+            }
+        );
+
+
+        return path;
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =========================================
+   地図を描く
+========================================= */
+
+function drawMap() {
+
+    const svg =
+        document.getElementById("map");
+
+
+    svg.innerHTML = "";
+
+
+    provinces.forEach(
+        (feature, index) => {
+
+            const geometry =
+                feature.geometry;
+
+
+            const pathData =
+                geometryToPath(
+                    geometry
+                );
+
+
+            const path =
+                document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "path"
+                );
+
+
+            path.setAttribute(
+                "d",
+                pathData
+            );
+
+
+            path.classList.add(
+                "province"
+            );
+
+
+            /*
+                元データの行政区名
+            */
+
+            const name =
+                feature.properties["地名"]
+                ||
+                feature.properties["name"]
+                ||
+                "";
+
+
+            path.dataset.name =
+                name;
+
+
+            path.dataset.index =
+                index;
+
+
+            /*
+                クリックしたら
+                答え合わせできるようにする
+            */
+
+            path.addEventListener(
+                "click",
+                function() {
+
+                    if (
+                        currentQuestion <
+                        provinces.length
+                    ) {
+
+                        /*
+                            クリックされた地域名を
+                            入力欄に入れる
+                        */
+
+                        document.getElementById(
+                            "answer"
+                        ).value =
+                            name.replace(
+                                /^(中华人民共和国)/,
+                                ""
+                            );
+
+                    }
+
+                }
+            );
+
+
+            svg.appendChild(path);
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   クイズ開始
+========================================= */
+
+function startQuiz() {
+
+    currentQuestion = 0;
+
+    score = 0;
+
+
+    document.getElementById(
+        "progress"
+    ).textContent =
+        "0 / " +
+        provinceNames.length +
+        " 正解";
+
+
+    updateQuestion();
+
+}
+
+
+/* =========================================
+   現在の問題を表示
+========================================= */
+
+function updateQuestion() {
+
+    /*
+        すべての地域を通常状態へ
+    */
+
+    document
+        .querySelectorAll(".province")
+        .forEach(
+            path => {
+
+                path.classList.remove(
+                    "current"
+                );
+
+            }
+        );
+
+
+    /*
+        全問終了
+    */
+
+    if (
+        currentQuestion >=
+        provinceNames.length
+    ) {
+
+        showComplete();
+
+        return;
+
+    }
+
+
+    const targetName =
+        provinceNames[
+            currentQuestion
+        ];
+
+
+    /*
+        GeoJSON上で
+        現在の地域を探す
+    */
+
+    const target =
+        provinces.find(
+            feature => {
+
+                const name =
+                    feature.properties["地名"]
+                    ||
+                    feature.properties["name"]
+                    ||
+                    "";
+
+                return (
+                    name === targetName
+                );
+
+            }
+        );
+
+
+    if (target) {
+
+        /*
+            featureのindex
+        */
+
+        const index =
+            provinces.indexOf(
+                target
+            );
+
+
+        const path =
+            document.querySelector(
+                `.province[data-index="${index}"]`
+            );
+
+
+        if (path) {
+
+            path.classList.add(
+                "current"
+            );
+
+        }
+
+    }
+
+
+    /*
+        問題文
+    */
+
+    document.getElementById(
+        "question"
+    ).textContent =
+        "この場所はどこ？";
+
+
+    /*
+        入力欄
+    */
+
+    const input =
+        document.getElementById(
+            "answer"
+        );
+
+
+    input.value = "";
+
+    input.focus();
+
+
+    /*
+        結果を消す
+    */
+
+    document.getElementById(
+        "result"
+    ).textContent = "";
+
+}
+
+
+/* =========================================
+   回答チェック
+========================================= */
+
+function checkAnswer() {
+
+    const input =
+        document
+            .getElementById("answer")
+            .value
+            .trim();
+
+
+    const correctAnswer =
+        provinceNames[
+            currentQuestion
+        ];
+
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+
+    /*
+        正解
+    */
+
+    if (
+        input === correctAnswer
+    ) {
+
+        result.textContent =
+            "○ 正解！";
+
+        result.className =
+            "result correct-text";
+
+
+        /*
+            正解した地域を
+            地図上で固定
+        */
+
+        const target =
+            provinces.find(
+                feature => {
+
+                    const name =
+                        feature.properties["地名"]
+                        ||
+                        feature.properties["name"]
+                        ||
+                        "";
+
+                    return (
+                        name ===
+                        correctAnswer
+                    );
+
+                }
+            );
+
+
+        if (target) {
+
+            const index =
+                provinces.indexOf(
+                    target
+                );
+
+
+            const path =
+                document.querySelector(
+                    `.province[data-index="${index}"]`
+                );
+
+
+            if (path) {
+
+                path.classList.remove(
+                    "current"
+                );
+
+                path.classList.add(
+                    "correct"
+                );
+
+            }
+
+        }
+
+
+        score++;
+
+
+        document.getElementById(
+            "progress"
+        ).textContent =
+            score +
+            " / " +
+            provinceNames.length +
+            " 正解";
+
+
+        currentQuestion++;
+
+
+        /*
+            少し待って次へ
+        */
+
+        setTimeout(
+            () => {
+
+                updateQuestion();
+
+            },
+            700
+        );
+
+
+    } else {
+
+        result.textContent =
+            "× 不正解！もう一度！";
+
+        result.className =
+            "result wrong-text";
+
+    }
+
+}
+
+
+/* =========================================
+   全問正解
+========================================= */
+
+function showComplete() {
+
+    document.getElementById(
+        "question"
+    ).innerHTML =
+        `
+        <div class="complete">
+            全国制覇！
+        </div>
+
+        <div class="complete-sub">
+            34の省級行政区をすべて制覇しました。
+        </div>
+        `;
+
+
+    document.getElementById(
+        "answer"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "answerButton"
+    ).style.display =
+        "none";
+
+
+    /*
+        再挑戦ボタン
+    */
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+
+    button.textContent =
+        "もう一度挑戦する";
+
+
+    button.className =
+        "restart-button";
+
+
+    button.onclick =
+        restartQuiz;
+
+
+    document
+        .querySelector(
+            ".answer-area"
+        )
+        .appendChild(
+            button
+        );
+
+}
+
+
+/* =========================================
+   再挑戦
+========================================= */
+
+function restartQuiz() {
+
+    currentQuestion = 0;
+
+    score = 0;
+
+
+    /*
+        地図を初期状態に戻す
+    */
+
+    document
+        .querySelectorAll(".province")
+        .forEach(
+            path => {
+
+                path.classList.remove(
+                    "correct"
+                );
+
+                path.classList.remove(
+                    "current"
+                );
+
+            }
+        );
+
+
+    /*
+        入力欄復活
+    */
+
+    document.getElementById(
+        "answer"
+    ).style.display =
+        "block";
+
+
+    /*
+        回答ボタン復活
+    */
+
+    document.getElementById(
+        "answerButton"
+    ).style.display =
+        "block";
+
+
+    /*
+        再挑戦ボタン削除
+    */
+
+    const restartButton =
+        document.querySelector(
+            ".restart-button"
+        );
+
+
+    if (restartButton) {
+
+        restartButton.remove();
+
+    }
+
+
+    /*
+        スコアリセット
+    */
+
+    document.getElementById(
+        "progress"
+    ).textContent =
+        "0 / " +
+        provinceNames.length +
+        " 正解";
+
+
+    document.getElementById(
+        "result"
+    ).textContent = "";
+
+
+    updateQuestion();
+
+}
+
+
+/* =========================================
+   Enterキー
+========================================= */
+
+document
+    .getElementById("answer")
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                checkAnswer();
+
+            }
+
+        }
+    );
+
+
+/* =========================================
+   起動
+========================================= */
+
+loadMap();
+
+
+</script>
+
+</body>
+</html>
